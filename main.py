@@ -1,65 +1,84 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
-
-def information_pointer(region, district, locality, street, house):
+import openpyxl
+import re
+def information_pointer(region, locality, street, house):
     driver = webdriver.Chrome()
     driver.get('https://www.reformagkh.ru/search/houses-advanced')
     time.sleep(5)
-
     region_element = driver.find_element(By.CLASS_NAME, 'region')
     region_element.send_keys(region)
     time.sleep(1)
-    offer=driver.find_elements(By.XPATH, "//ul[@id='ui-id-1']//li[@class='ui-menu-item']//div")
-    offer[0].click()
-    for i in range(len(offer)):
-        offer.pop()
-    time.sleep(2)
+    region_element.send_keys(webdriver.Keys.DOWN)
+    region_element.send_keys(webdriver.Keys.ENTER)
+    time.sleep(1)
 
-
+    '''
     district_element=driver.find_element(By.CLASS_NAME, 'district')
     district_element.send_keys(district)
     time.sleep(1)
-    offer = driver.find_elements(By.XPATH, "//ul[@id='ui-id-89']//li[@class='ui-menu-item']//div")
+    district_element.send_keys(webdriver.Keys.DOWN)
+    district_element.send_keys(webdriver.Keys.ENTER)
     time.sleep(1)
-    offer[0].click()
-    for i in range(len(offer)):
-        offer.pop()
+    '''
+
+
     time.sleep(2)
     locality_element=driver.find_element(By.CLASS_NAME, 'settlement')
-    locality_element.send_keys(locality)
+    if locality == 'None':
+        locality_element.send_keys(webdriver.Keys.TAB)
+    else:
+        locality_element.send_keys(locality)
+        time.sleep(1)
+        locality_element.send_keys(webdriver.Keys.DOWN)
+        locality_element.send_keys(webdriver.Keys.ENTER)
     time.sleep(1)
-    offer = driver.find_elements(By.XPATH, "//ul[@id='ui-id-89']//li[@class='ui-menu-item']//div")
-    time.sleep(1)
-    offer[0].click()
-    for i in range(len(offer)):
-        offer.pop()
-    time.sleep(2)
+
     street_element=driver.find_element(By.CLASS_NAME, 'street')
     street_element.send_keys(street)
     time.sleep(1)
-    offer = driver.find_elements(By.XPATH, "//ul[@id='ui-id-1999']//li[@class='ui-menu-item']//div")
-    offer[0].click()
-    for i in range(len(offer)):
-        offer.pop()
-    time.sleep(2)
+    street_element.send_keys(webdriver.Keys.DOWN)
+    street_element.send_keys(webdriver.Keys.ENTER)
+    time.sleep(1)
+
     house_element=driver.find_element(By.CLASS_NAME, 'house')
     house_element.send_keys(house)
     time.sleep(1)
-    for i in range(len(offer)):
-        offer.pop()
-    offer = driver.find_elements(By.XPATH, "//ul[@id='ui-id-1992']//li[@class='ui-menu-item']//div")
-    offer[0].click()
-    for i in range(len(offer)):
-        offer.pop()
-    time.sleep(2)
+    house_element.send_keys(webdriver.Keys.DOWN)
+    house_element.send_keys(webdriver.Keys.ENTER)
+    time.sleep(1)
     # print(btn_element)
     btn_element = driver.find_element(By.TAG_NAME, 'button')
     btn_element.click()
     time.sleep(2)
 
-    driver.implicitly_wait(5)
+    time.sleep(5)
+
 def main():
+    book=openpyxl.open('Тестовая выборка.xlsx', read_only=True)
+    sheet=book.active
+    #print(sheet.max_row)
+    for row in range(2, sheet.max_row):
+        region_broken=str(sheet[row][2].value)
+        region_template=re.compile('(?P<region>([A-я]?-?)+)')
+        match=re.match(region_template, region_broken)
+        region=match.group('region')
+        print(region)
+        locality=str(sheet[row][4].value)
+        print(locality)
+        street=str(sheet[row][6].value)
+        print(street)
+        house=str(sheet[row][7].value)
+        block=str(sheet[row][8].value)
+        if block=='None:':
+            house_stroke=house
+        else:
+            house_stroke=house+' '+block
+            print(house_stroke)
+
+        information_pointer(region, locality, street, house_stroke)
+    '''
     print("Введите регион (обязательно):")
     region=str(input())
     print("Введите район (необязательно):")
@@ -71,7 +90,8 @@ def main():
     print("Введите номер дома (необязательно):")
     house=int(input())
     information_pointer(region, district, locality, street, house)
-
+    '''
 
 if __name__=='__main__':
+
     main()

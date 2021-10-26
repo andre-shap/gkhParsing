@@ -17,7 +17,7 @@ def information_pointer(region, locality, street, house, count=0):
     driver.get('https://www.reformagkh.ru/search/houses-advanced')
     time.sleep(20)
 
-    #Вторая попытка войти на страницу с расширенным поиском (иммется для избежания captcha)
+    #Вторая попытка войти на страницу с расширенным поиском (имеется для избежания captcha)
     driver.get('https://www.reformagkh.ru/search/houses-advanced')
     time.sleep(5)
     val = dict()
